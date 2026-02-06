@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slide Show - Deiparine</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="slideshow-container">
+        <!-- Slides -->
+        <div class="slide fade">
+            <div class="slide-number">1 / 5</div>
+            <div class="slide-content">
+                <h2>Welcome to Deiparine</h2>
+                <p>A beautiful slide show presentation</p>
+            </div>
+        </div>
+
+        <div class="slide fade">
+            <div class="slide-number">2 / 5</div>
+            <div class="slide-content">
+                <h2>Slide 2</h2>
+                <p>This is the second slide</p>
+            </div>
+        </div>
+
+        <div class="slide fade">
+            <div class="slide-number">3 / 5</div>
+            <div class="slide-content">
+                <h2>Slide 3</h2>
+                <p>This is the third slide</p>
+            </div>
+        </div>
+
+        <div class="slide fade">
+            <div class="slide-number">4 / 5</div>
+            <div class="slide-content">
+                <h2>Slide 4</h2>
+                <p>This is the fourth slide</p>
+            </div>
+        </div>
+
+        <div class="slide fade">
+            <div class="slide-number">5 / 5</div>
+            <div class="slide-content">
+                <h2>Slide 5</h2>
+                <p>This is the final slide</p>
+            </div>
+        </div>
+
+        <!-- Navigation buttons -->
+        <a class="prev" onclick="changeSlide(-1)">&#10094;</a>
+        <a class="next" onclick="changeSlide(1)">&#10095;</a>
+    </div>
+
+    <!-- Dots/indicators -->
+    <div class="dots-container">
+        <span class="dot" onclick="currentSlide(1)"></span>
+        <span class="dot" onclick="currentSlide(2)"></span>
+        <span class="dot" onclick="currentSlide(3)"></span>
+        <span class="dot" onclick="currentSlide(4)"></span>
+        <span class="dot" onclick="currentSlide(5)"></span>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
