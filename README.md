@@ -1,2 +1,2 @@
 # deiparine
-this well open 
+this well active well 
