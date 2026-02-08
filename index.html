@@ -2,276 +2,214 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Adventure Quest</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<title>Adventure Quest RPG Zones</title>
 <style>
-body{
-  margin:0;
-  font-family:Arial;
-  background:#111;
-  color:white;
-  overflow:hidden;
-}
-
-/* UI */
-button{padding:6px 10px;margin:4px;border:none;border-radius:6px;background:#444;color:white}
-#loginScreen,#gameUI{position:fixed;inset:0}
-#loginScreen{display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000}
-#gameUI{display:none}
-#stats,#inventory,#skills{background:#222;padding:8px;margin:4px}
-
-/* Game */
-#game{
-  position:relative;
-  height:55vh;
-  background:url("https://images.stockcake.com/public/8/f/9/8f922c74-8e67-4f79-9d05-33e873ce11d2_large/gloomy-gothic-castle-stockcake.jpg");
-  background-size:cover;
-  overflow:hidden;
-}
-#player{
-  position:absolute;
-  width:50px;height:50px;
-  background:url("https://img.freepik.com/premium-vector/regal-warrior-emblem-knight-soldier-with-raised-sword-brave-sentinel-black-vector-logo-knight_974322-7293.jpg");
-  background-size:cover;
-  left:100px;top:200px;
-}
-.monster{
-  position:absolute;
-  width:50px;height:50px;
-  background:url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLgNFq14KLZKLT9Jn6JsnJr09uV4E5e6oiWg&s");
-  background-size:cover;
-}
-.boss{width:80px;height:80px;border:3px solid gold}
-
-/* Rarity */
-.basic{color:#ccc}
-.common{color:#6f6}
-.rare{color:#4af}
-.epic{color:#c6f}
-.legend{color:gold}
-.mythic{color:#ff5555}
-.god{color:red;text-shadow:0 0 6px red}
-
-/* Damage numbers */
-.damage{
-  position:absolute;
-  font-weight:bold;
-  animation:float 1s forwards;
-}
-@keyframes float{
-  0%{opacity:1;transform:translateY(0)}
-  100%{opacity:0;transform:translateY(-40px)}
-}
-
-/* Skill effects */
-.skill{
-  position:absolute;
-  width:80px;height:80px;
-  border-radius:50%;
-  pointer-events:none;
-  animation:fade .5s forwards;
-}
-.slash{border:2px solid white}
-.crit{background:radial-gradient(circle,red,transparent)}
-@keyframes fade{
-  to{opacity:0;transform:scale(1.6)}
-}
-
-/* Loot popup */
-#loot{
-  position:fixed;
-  top:10px;right:10px;
-  background:#000a;
-  padding:8px;
-  border-radius:6px;
-}
+body{margin:0;font-family:Arial;background:#111;color:white;overflow:hidden;}
+#game{position:relative;width:100vw;height:60vh;background:url("https://images.unsplash.com/photo-1503264116251-35a269479413");background-size:cover;background-position:center;overflow:hidden;}
+#player{position:absolute;width:90px;height:90px;background:url("https://img.freepik.com/premium-vector/regal-warrior-emblem-knight-soldier-with-raised-sword-brave-sentinel-black-vector-logo-knight_974322-7293.jpg");background-size:contain;background-repeat:no-repeat;left:50%;top:50%;transform:translate(-50%,-50%);transition: transform 0.1s;}
+#health-bar{position:absolute;width:90px;height:10px;background:red;top:-15px;left:0;border:1px solid white;}
+.monster{position:absolute;width:50px;height:50px;background:url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLgNFq14KLZKLT9Jn6JsnJr09uV4E5e6oiWg&s");background-size:cover;border:1px solid white;}
+.damage{position:absolute;color:red;font-weight:bold;animation:float 1s forwards;}
+@keyframes float{to{opacity:0;transform:translateY(-40px);}}
+.attack{transform: translate(-50%, -50%) scale(1.2);transition: transform 0.1s;}
+#joystick{position:absolute;bottom:40px;left:30px;width:120px;height:120px;background:rgba(255,255,255,0.1);border-radius:50%;}
+#stick{position:absolute;width:50px;height:50px;background:rgba(255,255,255,0.6);border-radius:50%;top:35px;left:35px;}
+#skills{position:absolute;bottom:40px;right:30px;display:flex;flex-direction:column;gap:15px;}
+.skill{width:60px;height:60px;border-radius:50%;background:rgba(200,0,0,0.7);color:white;font-size:20px;display:flex;align-items:center;justify-content:center;}
+#inventory,#shop{position:absolute;top:10px;right:10px;background:#222a;padding:8px;border-radius:6px;max-height:200px;overflow:auto;display:none;}
+#inventory ul,#shop div{margin:4px 0;}
+.rarity-basic{color:#ccc;}
+.rarity-common{color:#6f6;}
+.rarity-rare{color:#4af;}
+.rarity-epic{color:#c6f;}
+.rarity-legend{color:gold;}
+.rarity-mythic{color:#ff5555;}
+.rarity-god{color:red;text-shadow:0 0 6px red;}
+#stats{position:absolute;top:10px;left:10px;background:#222a;padding:6px;border-radius:6px;}
+#lootNotify{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.7);padding:6px 12px;border-radius:6px;color:white;font-weight:bold;display:none;}
 </style>
 </head>
-
 <body>
 
-<div id="loginScreen">
-  <h2>Adventure Quest</h2>
-  <input id="username" placeholder="Username">
-  <button onclick="login()">Enter</button>
-</div>
-
-<div id="gameUI">
-  <div id="stats"></div>
-  <div id="game"><div id="player"></div></div>
-
+<div id="game">
+  <div id="player"><div id="health-bar"></div></div>
+  <div id="joystick"><div id="stick"></div></div>
   <div id="skills">
-    <button onclick="attack()">⚔ Attack</button>
-    <button onclick="heal()">💚 Heal</button>
+    <div class="skill" onclick="attack()">⚔️</div>
+    <div class="skill" onclick="heal()">💚</div>
+    <div class="skill" onclick="toggleInventory()">🎒</div>
+    <div class="skill" onclick="toggleShop()">🏪</div>
   </div>
-
-  <div id="inventory">
-    <h3>Inventory</h3>
-    <ul id="invList"></ul>
-  </div>
+  <div id="inventory"><h3>Inventory</h3><ul id="invList"></ul></div>
+  <div id="shop"><h3>Shop</h3><div id="shopList"></div></div>
+  <div id="stats">HP:100 | ATK:20 | Zone:1</div>
+  <div id="lootNotify"></div>
 </div>
-
-<div id="loot"></div>
 
 <script>
 /* PLAYER */
-let user="",px=100,py=200,zone=1;
-let player={
-  hp:150,maxHp:150,
-  atk:10,def:5,
-  crit:10,
-  gold:0,
-  inventory:[],
-  sword:null,
-  armor:null
-};
+let px = window.innerWidth/2, py = window.innerHeight/2;
+let playerHP = 100, playerMaxHP = 100;
+let playerATK = 20, speed = 3;
+let dragging = false;
+let playerInventory = [];
+let playerSword = null;
+let monsters = [];
+let zone = 1;
 
-const swords=[
- {name:"Basic Sword",atk:5,range:60,rarity:"basic",chance:90},
- {name:"Rare Sword",atk:12,range:80,rarity:"rare",chance:40},
- {name:"Epic Sword",atk:20,range:100,rarity:"epic",chance:20},
- {name:"God Sword",atk:35,range:130,rarity:"god",chance:5,boss:true}
+const playerDiv = document.getElementById("player");
+const healthBar = document.getElementById("health-bar");
+const statsDiv = document.getElementById("stats");
+const inventoryDiv = document.getElementById("inventory");
+const shopDiv = document.getElementById("shop");
+const invList = document.getElementById("invList");
+const shopList = document.getElementById("shopList");
+const lootNotify = document.getElementById("lootNotify");
+
+/* SWORDS DATA */
+const swords = [
+  {name:"Basic Sword",atk:5,rarity:"rarity-basic",chance:90,price:30},
+  {name:"Common Sword",atk:8,rarity:"rarity-common",chance:85,price:50},
+  {name:"Rare Sword",atk:12,rarity:"rarity-rare",chance:70,price:80},
+  {name:"Epic Sword",atk:20,rarity:"rarity-epic",chance:55,price:150},
+  {name:"Legendary Sword",atk:30,rarity:"rarity-legend",chance:20,price:300},
+  {name:"Mythic Sword",atk:45,rarity:"rarity-mythic",chance:5,price:500},
+  {name:"God Sword",atk:60,rarity:"rarity-god",chance:1.5,price:1000}
 ];
 
-const armors=[
- {name:"Basic Armor",def:5,rarity:"basic",chance:90},
- {name:"Rare Armor",def:12,rarity:"rare",chance:40},
- {name:"Epic Armor",def:20,rarity:"epic",chance:20},
- {name:"God Armor",def:35,rarity:"god",chance:5,boss:true}
-];
-
-let monsters=[];
-
-/* LOGIN */
-function login(){
- user=username.value;
- loginScreen.style.display="none";
- gameUI.style.display="block";
- spawnZone();
- update();
+/* PLAYER MOVEMENT */
+function updateHealth(){ 
+  healthBar.style.width = (playerHP/playerMaxHP*90)+"px"; 
+  if(playerHP <= 0) playerDie();
+  updateStats(); 
 }
-
-/* ZONE */
-function spawnZone(){
- monsters.forEach(m=>m.el.remove());
- monsters=[];
- let count=2+zone;
- for(let i=0;i<count;i++)spawnMonster();
- if(Math.random()<0.3)spawnMonster(true);
+function updateStats(){ statsDiv.innerText=`HP:${Math.floor(playerHP)}/${playerMaxHP} | ATK:${playerATK + (playerSword?playerSword.atk:0)} | Zone:${zone}`; }
+function move(dx,dy){ 
+  px += dx; py += dy; 
+  px=Math.max(0,Math.min(window.innerWidth-90,px)); 
+  py=Math.max(0,Math.min(window.innerHeight-90,py)); 
+  playerDiv.style.left=px+"px"; playerDiv.style.top=py+"px"; 
 }
+document.addEventListener("keydown",e=>{
+  if(e.key==="ArrowUp") move(0,-speed*5);
+  if(e.key==="ArrowDown") move(0,speed*5);
+  if(e.key==="ArrowLeft") move(-speed*5,0);
+  if(e.key==="ArrowRight") move(speed*5,0);
+});
 
-function spawnMonster(boss=false){
- let el=document.createElement("div");
- el.className="monster"+(boss?" boss":"");
- el.style.left=Math.random()*500+"px";
- el.style.top=Math.random()*250+"px";
- game.appendChild(el);
- monsters.push({
-   el,
-   hp:(boss?300:100)*zone,
-   atk:(boss?20:10)*zone,
-   boss
- });
+/* JOYSTICK */
+const joystick = document.getElementById("joystick");
+const stick = document.getElementById("stick");
+joystick.addEventListener("touchstart",()=>dragging=true);
+joystick.addEventListener("touchend",()=>{dragging=false; stick.style.left="35px"; stick.style.top="35px";});
+joystick.addEventListener("touchmove", e=>{
+  if(!dragging) return;
+  let rect = joystick.getBoundingClientRect();
+  let x = e.touches[0].clientX - rect.left -25;
+  let y = e.touches[0].clientY - rect.top -25;
+  x = Math.max(0, Math.min(70,x));
+  y = Math.max(0, Math.min(70,y));
+  stick.style.left=x+"px"; stick.style.top=y+"px";
+  move((x-35)*0.2,(y-35)*0.2);
+});
+
+/* SPAWN MONSTERS BASED ON ZONE */
+function spawnMonsters(){
+  monsters.forEach(m=>m.el.remove());
+  monsters=[];
+  let count = 2 + zone;
+  for(let i=0;i<count;i++){
+    let m = document.createElement("div");
+    m.className="monster";
+    m.style.left = Math.random()*(window.innerWidth-50)+"px";
+    m.style.top = Math.random()*(window.innerHeight-50)+"px";
+    m.hp = 20 + 20*zone;
+    m.atk = 2 + zone*2;
+    document.getElementById("game").appendChild(m);
+    monsters.push({el:m,hp:m.hp,atk:m.atk});
+  }
 }
 
 /* ATTACK */
 function attack(){
- monsters.forEach((m,i)=>{
-   let dx=parseInt(m.el.style.left)-px;
-   let dy=parseInt(m.el.style.top)-py;
-   let dist=Math.hypot(dx,dy);
-   let range=player.sword?player.sword.range:60;
-   if(dist<=range){
-     let crit=Math.random()*100<player.crit;
-     let dmg=player.atk+(player.sword?player.sword.atk:0);
-     if(crit)dmg*=2;
-     m.hp-=dmg;
-     showDamage(dmg,m.el,crit);
-     playSkill(m.el,crit);
-     if(m.hp<=0){
-       dropLoot(m.boss);
-       m.el.remove();
-       monsters.splice(i,1);
-     }
-   }
- });
- if(monsters.length===0){zone++;spawnZone()}
- update();
+  playerDiv.classList.add("attack");
+  setTimeout(()=>playerDiv.classList.remove("attack"),100);
+  monsters.forEach((m,i)=>{
+    let mx=parseFloat(m.el.style.left), my=parseFloat(m.el.style.top);
+    let dist=Math.hypot(px-mx,py-my);
+    if(dist<120){
+      let dmg = playerATK + (playerSword?playerSword.atk:0);
+      m.hp -= dmg;
+      showDamage(dmg,m.el);
+      if(m.hp<=0){ m.el.remove(); monsters.splice(i,1); dropLoot(); }
+    }
+  });
+  if(monsters.length==0){ zone++; spawnMonsters(); }
 }
 
-/* VISUALS */
-function showDamage(dmg,el,crit){
- let d=document.createElement("div");
- d.className="damage";
- d.style.left=el.style.left;
- d.style.top=el.style.top;
- d.style.color=crit?"red":"white";
- d.innerText=dmg;
- game.appendChild(d);
- setTimeout(()=>d.remove(),1000);
-}
-function playSkill(el,crit){
- let s=document.createElement("div");
- s.className="skill "+(crit?"crit":"slash");
- s.style.left=el.style.left;
- s.style.top=el.style.top;
- game.appendChild(s);
- setTimeout(()=>s.remove(),500);
+/* HEAL */
+function heal(){ playerHP=Math.min(playerMaxHP,playerHP+20); updateHealth(); }
+
+/* DAMAGE FLOAT */
+function showDamage(dmg,el){ let d=document.createElement("div"); d.className="damage"; d.style.left=el.style.left; d.style.top=el.style.top; d.innerText=dmg; document.getElementById("game").appendChild(d); setTimeout(()=>d.remove(),1000); }
+
+/* MONSTER AI */
+function monstersAI(){
+  monsters.forEach(m=>{
+    let mx=parseFloat(m.el.style.left), my=parseFloat(m.el.style.top);
+    let dx = px - mx, dy = py - my, dist = Math.hypot(dx,dy);
+    if(dist>0){
+      let step=1 + zone*0.3;
+      m.el.style.left = mx + dx/dist*step + "px";
+      m.el.style.top = my + dy/dist*step + "px";
+    }
+    if(dist<50){ playerHP -= m.atk*0.02; if(playerHP<0) playerHP=0; updateHealth(); }
+  });
+  requestAnimationFrame(monstersAI);
 }
 
-/* LOOT */
-function dropLoot(boss){
- swords.forEach(s=>{
-  if(s.boss&&!boss)return;
-  if(Math.random()*100<s.chance+(zone*2)){
-    player.inventory.push(s);
-    notify("🗡 "+s.name);
-  }
- });
- armors.forEach(a=>{
-  if(a.boss&&!boss)return;
-  if(Math.random()*100<a.chance+(zone*2)){
-    player.inventory.push(a);
-    notify("🛡 "+a.name);
-  }
- });
+/* INVENTORY & SHOP */
+function toggleInventory(){ inventoryDiv.style.display = inventoryDiv.style.display=="none"?"block":"none"; shopDiv.style.display="none"; updateInventory();}
+function toggleShop(){ shopDiv.style.display = shopDiv.style.display=="none"?"block":"none"; inventoryDiv.style.display="none";}
+function updateInventory(){ invList.innerHTML=""; playerInventory.forEach((it,i)=>{ let li=document.createElement("li"); li.innerHTML=`<span class="${it.rarity}">${it.name}</span> <button onclick="equip(${i})">Equip</button>`; invList.appendChild(li); }); }
+function equip(i){ let it = playerInventory[i]; if(it.atk) playerSword=it; }
+
+/* LOOT WITH NOTIFICATION */
+function showLoot(text){
+  lootNotify.innerText = text;
+  lootNotify.style.display="block";
+  setTimeout(()=>lootNotify.style.display="none",1500);
+}
+function dropLoot(){
+  swords.forEach(s=>{
+    if(Math.random()*100 < s.chance + zone){
+      playerInventory.push(s);
+      updateInventory();
+      showLoot("🗡 Loot: "+s.name);
+    }
+  });
 }
 
-/* INVENTORY */
-function updateInventory(){
- invList.innerHTML="";
- player.inventory.forEach((it,i)=>{
-  let li=document.createElement("li");
-  li.innerHTML=`<span class="${it.rarity}">${it.name}</span>
-  <button onclick="equip(${i})">Equip</button>`;
-  invList.appendChild(li);
- });
+/* SHOP */
+function buildShop(){ shopList.innerHTML=""; swords.forEach(s=>{ let d=document.createElement("div"); d.innerHTML=`<span class="${s.rarity}">${s.name}</span> - ${s.price}G <button onclick="buyItem('${s.name}')">Buy</button>`; shopList.appendChild(d); }); }
+function buyItem(name){ let s=swords.find(x=>x.name===name); if(s){ playerInventory.push(s); updateInventory(); showLoot("Bought "+s.name); }}
+
+/* PLAYER DEATH & RESET */
+function playerDie(){
+  showLoot("💀 You Died! Zone reset to 1");
+  zone = 1;
+  playerHP = playerMaxHP;
+  playerSword = null;
+  spawnMonsters();
+  updateHealth();
 }
 
-function equip(i){
- let it=player.inventory[i];
- if(it.atk){
-   if(player.sword)player.atk-=player.sword.atk;
-   player.sword=it;player.atk+=it.atk;
- }else{
-   if(player.armor)player.def-=player.armor.def;
-   player.armor=it;player.def+=it.def;
- }
- update();
-}
-
-/* UI */
-function notify(t){
- loot.innerHTML=t;
- setTimeout(()=>loot.innerHTML="",1500);
-}
-function heal(){player.hp=Math.min(player.maxHp,player.hp+30);update()}
-function update(){
- stats.innerHTML=`HP ${player.hp}/${player.maxHp} | ATK ${player.atk} | DEF ${player.def} | ZONE ${zone}`;
- updateInventory();
-}
+/* INIT */
+spawnMonsters();
+updateHealth();
+buildShop();
+monstersAI();
 </script>
-
 </body>
 </html>
